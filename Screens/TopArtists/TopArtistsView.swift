@@ -10,6 +10,8 @@ import SwiftUI
 struct TopArtistsView<ViewModel: TopArtistsViewModelType>: View {
     
     @ObservedObject private var viewModel: ViewModel
+    @State private var showingSheet = false
+    
     private var router: TopArtistViewRouterType
     
     init(viewModel: ViewModel, router: TopArtistViewRouterType) {
@@ -22,9 +24,34 @@ struct TopArtistsView<ViewModel: TopArtistsViewModelType>: View {
             contentView
                 .navigationBarTitle("Top Artists")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        toolBarContent
+                    }
+                })
                 .onAppear(perform: viewModel.didLoad)
         }
         
+    }
+    
+    var toolBarContent: some View {
+        VStack {
+            Button(action: {
+                showingSheet = true
+            }, label: {
+                Text(viewModel.country)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.black)
+            }).actionSheet(isPresented: $showingSheet, content: {
+                let buttons = Country.allCases.map { country -> ActionSheet.Button in
+                    ActionSheet.Button.default(Text(country.title)) {
+                        viewModel.didChange(country: country)
+                    }
+                }
+                return ActionSheet(title: Text("Select Country"), message: nil, buttons: buttons + [.cancel()])
+            })
+            Image(systemName:"chevron.compact.down")
+        }
     }
     
     private var contentView: AnyView {

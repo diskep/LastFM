@@ -55,7 +55,7 @@ final class TopArtistsRepository {
     }
 
     private func loadCachedArtists(for country: Country) -> AnyPublisher<[Artist], Error> {
-        let publisher = networkService.execute(request: LastFMTargetRequest.topArtists(country: .ukraine), with: TopArtistsResponse.self)
+        let publisher = networkService.execute(request: LastFMTargetRequest.topArtists(country: country), with: TopArtistsResponse.self)
                                       .map(\.artists)
                                       .share()
                                       .eraseToAnyPublisher()

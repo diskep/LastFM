@@ -7,8 +7,16 @@
 
 import Foundation
 
-enum Country: String {
-    case usa
+enum Country: String, CaseIterable {
+    case spain
     case ukraine
-    case uk
+    case ireland
+    
+    var title: String {
+        switch self {
+        case .spain: return "Spain"
+        case .ukraine: return "Ukraine"
+        case .ireland: return "Ireland"
+        }
+    }
 }

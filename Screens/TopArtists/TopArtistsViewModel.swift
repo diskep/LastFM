@@ -11,6 +11,8 @@ import Foundation
 final class TopArtistsViewModel {
     
     @Published private(set) var state: ViewState<[RowViewModel]> = .loading
+    @Published private(set) var country: String = Country.ukraine.rawValue.capitalized
+    
     private let repository: TopArtistsRepositoryType
     private var disposeBag: Set<AnyCancellable>
     private var isViewLoaded = false
@@ -20,16 +22,9 @@ final class TopArtistsViewModel {
         disposeBag = Set<AnyCancellable>()
     }
     
-}
-
-// MARK: - TopArtistsViewModelType
-
-extension TopArtistsViewModel: TopArtistsViewModelType {
-    func didLoad() {
-        guard !isViewLoaded else { return }
-        isViewLoaded = true
+    private func fetchArtists(for country: Country) {
         state = .loading
-        repository.getTopArtists(for: .ukraine)
+        repository.getTopArtists(for: country)
             .map {
                 $0.compactMap { artist -> RowViewModel? in
                     guard let image = artist.image.first else { return nil }
@@ -49,6 +44,23 @@ extension TopArtistsViewModel: TopArtistsViewModelType {
                 self?.state = .data(rows)
             }
             .store(in: &disposeBag)
+    }
+    
+}
+
+// MARK: - TopArtistsViewModelType
+
+extension TopArtistsViewModel: TopArtistsViewModelType {
+    func didChange(country: Country) {
+        self.country = country.rawValue.capitalized
+        fetchArtists(for: country)
+    }
+    
+    func didLoad() {
+        guard !isViewLoaded else { return }
+        isViewLoaded = true
+        
+        fetchArtists(for: .ukraine)
     }
 
 }

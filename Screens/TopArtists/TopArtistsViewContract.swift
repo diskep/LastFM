@@ -9,7 +9,9 @@ import SwiftUI
 
 protocol TopArtistsViewModelType: ObservableObject {
     var state: ViewState<[RowViewModel]> { get }
+    var country: String { get }
     
+    func didChange(country: Country)
     func didLoad()
 }
 
